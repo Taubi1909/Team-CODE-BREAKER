@@ -35,28 +35,36 @@ from PyQt5.QtCore import QObject, Qt, pyqtSignal
 app = QApplication(sys.argv)
 
 class MainWidget(QWidget):
-    def __init__(self):
+    def __init__(self, q: Queue):
         super().__init__()
+        self.q = q
         self.initMe()
 
     def initMe(self):
         self.v = QVBoxLayout(self)
-        self.btn = QPushButton("up")
-        
         # self.label = QLabel()
         # self.img = QPixmap()
         # self.label.setPixmap(self.img)
         # self.v.addWidget(self.label)
-        self.btn.connect()
-        self.v.addLayout(self.btn)
+        self.btn_up = QPushButton("up")
+        self.btn_up.pressed.connect(self.up)
+        self.v.addWidget(self.btn_up)
+
+        self.btn_down = QPushButton("down")
+        self.btn_down.pressed.connect(self.down)
+        self.v.addWidget(self.btn_down)
         self.setLayout(self.v)
 
     def up(self, *args):
+        self.q.put("up")
 
+    def down(self, *args):
+        self.q.put("down")
 
 class Window(QMainWindow):
-    def __init__(self):
+    def __init__(self, q: Queue):
         super().__init__()
+        self.q = q
         self.initMe()
 
     def initMe(self):
@@ -68,12 +76,12 @@ class Window(QMainWindow):
         self.setWindowTitle('Team Code Breaker')
 
 
-        self.mainwidget = MainWidget()
+        self.mainwidget = MainWidget(self.q)
         self.setCentralWidget(self.mainwidget)
 
         self.show()
 
 
-def start_gui():
-    w = Window()
+def start_gui(q: Queue):
+    w = Window(q)
     sys.exit(app.exec_())
