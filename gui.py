@@ -6,6 +6,8 @@ import shutil
 import sys
 import subprocess
 from os.path import expanduser
+from queue import Queue
+
 
 from PyQt5.QtWidgets import (
     QStatusBar, QWidget,
@@ -34,10 +36,23 @@ app = QApplication(sys.argv)
 
 class MainWidget(QWidget):
     def __init__(self):
+        super().__init__()
         self.initMe()
 
-    def initMe():
-        pass
+    def initMe(self):
+        self.v = QVBoxLayout(self)
+        self.btn = QPushButton("up")
+        
+        # self.label = QLabel()
+        # self.img = QPixmap()
+        # self.label.setPixmap(self.img)
+        # self.v.addWidget(self.label)
+        self.btn.connect()
+        self.v.addLayout(self.btn)
+        self.setLayout(self.v)
+
+    def up(self, *args):
+
 
 class Window(QMainWindow):
     def __init__(self):
@@ -53,7 +68,7 @@ class Window(QMainWindow):
         self.setWindowTitle('Team Code Breaker')
 
 
-        self.mainwidget = QLabel('Hallo')
+        self.mainwidget = MainWidget()
         self.setCentralWidget(self.mainwidget)
 
         self.show()
@@ -62,5 +77,3 @@ class Window(QMainWindow):
 def start_gui():
     w = Window()
     sys.exit(app.exec_())
-
-start_gui()

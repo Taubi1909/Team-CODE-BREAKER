@@ -1,10 +1,27 @@
-class Controler():
-	def __init__(self) -> None:
-		self.i = 2
+from djitellopy import Tello
+from queue import Queue
 
-	def start(self, a: int):
-		print(a)
-		print(self.i)
+tello = Tello()
 
-controller = Controler()
-controller.start(7)
+"""
+up
+down
+forwards
+backwards
+left
+right
+rotate_l
+rotate_r
+"""
+
+class Controler(Tello):
+	def __init__(self, IP: str, retry_count=3):
+		super().__init__(host=IP, retry_count=retry_count)
+		self.connect()
+
+	def m_video(self):
+		self.streamon()
+		frame_read = self.get_frame_read()
+
+	def m_movement(self, command: str):
+		pass
