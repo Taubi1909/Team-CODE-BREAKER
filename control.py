@@ -22,9 +22,11 @@ class Controler(Tello):
 		self.streamon()
 		frame_read = self.get_frame_read()
 		# cv2.imwrite("image.png", frame_read.frame)
-		img = Image.fromarray(frame_read.frame, mode='RGB')
-		qt_img = ImageQt.ImageQt(img)
-		image_queue.put(qt_img)
+		while True:
+			time.sleep(1/30)
+			img = Image.fromarray(frame_read.frame, mode='RGB')
+			qt_img = ImageQt.ImageQt(img)
+			image_queue.put(qt_img)
 		
 	def m_movement(self, command: str):
 		if command == "up":
