@@ -22,7 +22,8 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QListWidget,
     QListWidgetItem,
-    QAbstractItemView
+    QAbstractItemView,
+    QProgressBar
 )
 from PyQt5.QtGui import QIcon, QPixmap, QKeyEvent
 from PyQt5.QtCore import QObject, pyqtSignal, QThreadPool
@@ -50,8 +51,12 @@ class MainWidget(QWidget):
         self.btn_up = QPushButton("up")
         self.btn_up.pressed.connect(lambda: self.q.put("up"))
 
-        self.battery = QLabel("T4N14s Health: %")
+        self.battery = QLabel("T4N14s Health:")
         self.v.addWidget(self.battery)
+
+        self.battery_bar = QProgressBar()
+
+        self.v.addWidget(self.battery_bar)
 
         self.grid.addWidget(self.btn_up, 0, 0)
 
@@ -129,8 +134,11 @@ class MainWidget(QWidget):
 
     def update_battery(self):
         while True:
-            self.battery.setText(f"T4N14s Health: { self.controller.get_battery() }%")
-            time.sleep(10)
+            battery_percent: int = self.controller.get_battery()
+            self.battery_bar.setValue(battery_percent)
+            # if battery_percent <= 15:
+            #    self.battery_bar.
+            time.sleep(30)
 
 class Window(QMainWindow):
     def __init__(self, q: Queue, image_q: Queue, controller):
