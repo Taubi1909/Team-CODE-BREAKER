@@ -1,16 +1,16 @@
+from time import sleep
 from djitellopy import Tello
 from queue import Queue
 from PIL import Image, ImageQt
-import cv2
+import time
 """
-up
-down
 forwards
 backwards
 left
 right
 rotate_l
 rotate_r
+land
 """
 
 class Controler(Tello):
@@ -30,4 +30,30 @@ class Controler(Tello):
 		if command == "up":
 			self.move_up(50)
 		elif command == "down":
+			self.move_down(50)
+		elif command == "forward":
+			self.move_forward(50)
+		elif command == "backwards":
+			self.move_back(50)
+		elif command == "left":
+			self.move_left(50)
+		elif command == "right":
+			self.move_right(50)
+		elif command == "rotate_l":
+			self.move_ccw(90)
+		elif command == "rotate_r":
+			self .move_cw(90)
+		elif command == "land":
+			self.land()
+		elif command == "flip_back":
+			self.flip_back()
+		elif command == "flip_forward":
+			self.flip_forward()
+		elif command == "flip_right":
+			self.flip_right()
+		elif command == "flip_left":
+			self.flip_left()
+		elif command == "jump":
+			self.move_up(50)
+			time.sleep(1)
 			self.move_down(50)
