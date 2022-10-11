@@ -1,3 +1,4 @@
+from lib2to3.pgen2.token import COMMA
 from time import sleep
 from djitellopy import Tello
 from queue import Queue
@@ -21,12 +22,13 @@ class Controler(Tello):
 	def m_video(self, image_queue: Queue):
 		self.streamon()
 		frame_read = self.get_frame_read()
-		# cv2.imwrite("image.png", frame_read.frame)
 		while True:
 			time.sleep(1/30)
-			img = Image.fromarray(frame_read.frame, mode='RGB')
-			qt_img = ImageQt.ImageQt(img)
-			image_queue.put(qt_img)
+			f = frame_read.frame
+			if f is not None:
+				img = Image.fromarray(f, mode='RGB')
+				qt_img = ImageQt.ImageQt(img)
+				image_queue.put(qt_img)
 		
 	def m_movement(self, command: str):
 		if command == "up":
@@ -35,27 +37,53 @@ class Controler(Tello):
 			self.move_down(50)
 		elif command == "forward":
 			self.move_forward(50)
-		elif command == "backwards":
+		elif command == "backward":
 			self.move_back(50)
 		elif command == "left":
 			self.move_left(50)
 		elif command == "right":
 			self.move_right(50)
 		elif command == "rotate_l":
-			self.move_ccw(90)
+			self.rotate_counter_clockwise(90)
 		elif command == "rotate_r":
-			self .move_cw(90)
+			self.rotate_clockwise(90)
 		elif command == "land":
 			self.land()
 		elif command == "flip_back":
+			self.streamoff()
+			time.sleep(1)
 			self.flip_back()
+			time.sleep(1)
+			self.streamon()
 		elif command == "flip_forward":
+			self.streamoff()
+			time.sleep(1)
 			self.flip_forward()
+			time.sleep(1)
+			self.streamon()
 		elif command == "flip_right":
+			self.streamoff()
+			time.sleep(1)
 			self.flip_right()
+			time.sleep(1)
+			self.streamon()
 		elif command == "flip_left":
+			self.streamoff()
+			time.sleep(1)
 			self.flip_left()
+			time.sleep(1)
+			self.streamon()
+		elif command == "start":
+			self.takeoff()
+		elif command == "dance":
+			self.move_left(50)
+			self.move_right(100)
+			self.move_left(50)
+			self.rotate_clockwise(360)
+			# self.flip_forward()
+			# self.flip_back()
+		elif command == "emergency":
+			self.emergency()
 		elif command == "jump":
 			self.move_up(50)
-			time.sleep(1)
 			self.move_down(50)

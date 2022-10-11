@@ -13,8 +13,7 @@ def main():
 	t1.start()
 	t2 = threading.Thread(target=video_thread, daemon=None, args=(controller, image_queue, ))
 	t2.start()
-	time.sleep(2)
-	gui.start_gui(queue, image_queue)
+	gui.start_gui(queue, image_queue, controller)
 
 
 def control_thread(q: Queue, controller: control.Controler):
@@ -22,9 +21,10 @@ def control_thread(q: Queue, controller: control.Controler):
 	time.sleep(2)
 	while True:
 		cmd: str = q.get()
-		if cmd == "land":
-			break
-		controller.m_movement(cmd)
+		try:
+			controller.m_movement(cmd)
+		except Exception as e:
+			print(e)
 		
 	controller.land()
 	time.sleep(5)
