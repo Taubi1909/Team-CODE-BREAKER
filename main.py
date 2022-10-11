@@ -25,10 +25,6 @@ def control_thread(q: Queue, controller: control.Controler):
 			controller.m_movement(cmd)
 		except Exception as e:
 			print(e)
-		
-	controller.land()
-	time.sleep(5)
-	controller.end()
 
 def video_thread(controller: control.Controler, image_queue: Queue):
 	controller.m_video(image_queue)

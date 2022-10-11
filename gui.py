@@ -188,6 +188,10 @@ class Window(QMainWindow):
         else:
             super().keyPressEvent(event)
 
+    def closeEvent(self, event):
+        self.controller.end()
+        return super().closeEvent(event)
+
 
 def start_gui(q: Queue, image_q: Queue, controller):
     w = Window(q, image_q, controller)
