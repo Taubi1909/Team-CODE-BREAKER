@@ -158,21 +158,21 @@ class Window(QMainWindow):
 
     def keyPressEvent(self, event: QKeyEvent):
         if event.key() == Qt.Key_W:
-             self.q.put("forward")
+            self.q.put("forward")
         elif event.key() == Qt.Key_S:
-             self.q.put("backward")
+            self.q.put("backward")
         elif event.key() == Qt.Key_D:
-             self.q.put("right")
+            self.q.put("right")
         elif event.key() == Qt.Key_A:
-             self.q.put("left")
+            self.q.put("left")
         elif event.key() == Qt.Key_I:
-             self.q.put("up")
+            self.q.put("up")
         elif event.key() == Qt.Key_K:
-             self.q.put("down")
+            self.q.put("down")
         elif event.key() == Qt.Key_J:
-             self.q.put("rotate_l")
+            self.q.put("rotate_l")
         elif event.key() == Qt.Key_L:
-             self.q.put("rotate_r")
+            self.q.put("rotate_r")
         elif event.key() == Qt.Key_C:
             self.q.put("land")
         elif event.key() == Qt.Key_V:
