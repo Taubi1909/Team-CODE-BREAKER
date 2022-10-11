@@ -35,8 +35,8 @@ class MainWidget(QWidget):
         super().__init__()
         self.q = q
         self.image_q = image_q
-        self.initMe()
         self.threadmanager = QThreadPool()
+        self.initMe()
 
     def initMe(self):
         self.v = QVBoxLayout(self)
@@ -63,9 +63,8 @@ class MainWidget(QWidget):
     def update_pixmap(self):
         while True:
             time.sleep(1 / 30)
-            img = self.image_q.get_nowait()
-            if img is not None:
-                self.label.setPixmap(QPixmap.fromImage(img))
+            img = self.image_q.get()
+            self.label.setPixmap(QPixmap.fromImage(img))
 
 class Window(QMainWindow):
     def __init__(self, q: Queue, image_q: Queue):
