@@ -136,8 +136,6 @@ class MainWidget(QWidget):
         while True:
             battery_percent: int = self.controller.get_battery()
             self.battery_bar.setValue(battery_percent)
-            # if battery_percent <= 15:
-            #    self.battery_bar.
             time.sleep(30)
 
 class Window(QMainWindow):
