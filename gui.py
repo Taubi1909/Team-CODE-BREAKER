@@ -1,36 +1,28 @@
-import os
-import shutil
 import sys
-import subprocess
-from os.path import expanduser
 from queue import Queue
 import time
 
 from PyQt5.QtWidgets import (
-    QStatusBar, QWidget,
+    QWidget,
     QPushButton,
-    QHBoxLayout,
     QVBoxLayout,
     QApplication,
     QMainWindow,
-    QAction,
     QGridLayout,
-    QScrollArea,
     QLabel,
-    QFileDialog,
-    QLineEdit,
-    QMessageBox,
-    QListWidget,
-    QListWidgetItem,
-    QAbstractItemView,
     QProgressBar
 )
-from PyQt5.QtGui import QIcon, QPixmap, QKeyEvent
+from PyQt5.QtGui import QPixmap, QKeyEvent
 from PyQt5.QtCore import QObject, pyqtSignal, QThreadPool
 from PyQt5.Qt import Qt
 
 
 app = QApplication(sys.argv)
+
+class Signals(QObject):
+    running = pyqtSignal(bool)
+
+sig = Signals()
 
 class MainWidget(QWidget):
     def __init__(self, q: Queue, image_q: Queue, controller):
@@ -39,6 +31,7 @@ class MainWidget(QWidget):
         self.image_q = image_q
         self.threadmanager = QThreadPool()
         self.controller = controller
+        self.runnning = True
         self.initMe()
 
     def initMe(self):
@@ -48,16 +41,16 @@ class MainWidget(QWidget):
         self.label.setPixmap(QPixmap("loading_video.png"))
         self.grid = QGridLayout()
         self.v.addWidget(self.label)
-        self.btn_up = QPushButton("up")
-        self.btn_up.pressed.connect(lambda: self.q.put("up"))
 
         self.battery = QLabel("T4N14s Health:")
         self.v.addWidget(self.battery)
 
-        self.battery_bar = QProgressBar()
-
+        self.battery_bar = QProgressBar()  # Bar for displaying battery percentage
         self.v.addWidget(self.battery_bar)
 
+        # Buttons for controlling
+        self.btn_up = QPushButton("up")
+        self.btn_up.pressed.connect(lambda: self.q.put("up"))
         self.grid.addWidget(self.btn_up, 0, 0)
 
         self.btn_fw = QPushButton("forward")
@@ -123,17 +116,22 @@ class MainWidget(QWidget):
         self.v.addLayout(self.grid)
         self.v.addWidget(self.btn_emergency)
         self.setLayout(self.v)
-        self.threadmanager.start(self.update_pixmap)
-        self.threadmanager.start(self.update_battery)
+        self.threadmanager.start(self.update_pixmap)  # Responsible for updating the image, for displaying the camera
+        self.threadmanager.start(self.update_battery)  # Responsible for updating the battery bar
+
+        sig.running.connect(self.stop_threads)  # Signal emitted when programm is being closed
+
+    def stop_threads(self):
+        self.runnning = False
 
     def update_pixmap(self):
-        while True:
+        while self.runnning:
             time.sleep(1 / 30)
             img = self.image_q.get()
             self.label.setPixmap(QPixmap.fromImage(img))
 
     def update_battery(self):
-        while True:
+        while self.runnning:
             battery_percent: int = self.controller.get_battery()
             self.battery_bar.setValue(battery_percent)
             time.sleep(30)
@@ -150,13 +148,12 @@ class Window(QMainWindow):
         self.setGeometry(50, 50, 500, 500)
         self.setWindowTitle('Team Code Breaker')
 
-
         self.mainwidget = MainWidget(self.q, self.image_q, self.controller)
         self.setCentralWidget(self.mainwidget)
 
         self.show()
 
-    def keyPressEvent(self, event: QKeyEvent):
+    def keyPressEvent(self, event: QKeyEvent):  # Using The Keyboard to control the drone
         if event.key() == Qt.Key_W:
             self.q.put("forward")
         elif event.key() == Qt.Key_S:
@@ -194,8 +191,10 @@ class Window(QMainWindow):
         else:
             super().keyPressEvent(event)
 
-    def closeEvent(self, event):
+    def closeEvent(self, event):  # Called when window_close button is pressed
         self.controller.end()
+        self.q.put("exit")
+        sig.running.emit(False)
         return super().closeEvent(event)
 
 
