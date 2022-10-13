@@ -132,7 +132,8 @@ class MainWidget(QWidget):
 
     def update_battery(self):
         while self.runnning:
-            battery_percent: int = self.controller.get_battery()
+            # battery_percent: int = self.controller.get_battery()
+            battery_percent = 20
             self.battery_bar.setValue(battery_percent)
             time.sleep(30)
 
