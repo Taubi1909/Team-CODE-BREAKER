@@ -16,6 +16,7 @@ from PyQt5.QtGui import QPixmap, QKeyEvent
 from PyQt5.QtCore import QObject, pyqtSignal, QThreadPool
 from PyQt5.Qt import Qt
 
+from djitellopy import Tello, TelloSwarm
 
 app = QApplication(sys.argv)
 
@@ -45,8 +46,17 @@ class MainWidget(QWidget):
         self.battery = QLabel("T4N14s Health:")
         self.v.addWidget(self.battery)
 
-        self.battery_bar = QProgressBar()  # Bar for displaying battery percentage
-        self.v.addWidget(self.battery_bar)
+        if type(self.controller) == Tello:
+            self.battery_bar = QProgressBar()  # Bar for displaying battery percentage
+            self.v.addWidget(self.battery_bar)
+        elif type(self.controller) == TelloSwarm:
+            i = 0
+            self.battery_bars = []
+            for j in self.controller:
+                self.battery_bars.append(QProgressBar())  # Bar for displaying battery percentage
+                self.battery_bars[i].setToolTip(j.address[0])
+                self.v.addWidget(self.battery_bars[i])
+                i += 1
 
         # Buttons for controlling
         self.btn_up = QPushButton("up")
@@ -132,9 +142,16 @@ class MainWidget(QWidget):
 
     def update_battery(self):
         while self.runnning:
-            # battery_percent: int = self.controller.get_battery()
-            battery_percent = 20
-            self.battery_bar.setValue(battery_percent)
+            if type(self.controller) == Tello:
+                battery_percent: int = self.controller.get_battery()
+                self.battery_bar.setValue(battery_percent)
+            elif type(self.controller) == TelloSwarm:
+                i = 0
+                for j in self.controller:
+                    battery_percent: int = j.get_battery()
+                    self.battery_bars[i].setValue(battery_percent)
+                    i += 1
+
             time.sleep(30)
 
 class Window(QMainWindow):
