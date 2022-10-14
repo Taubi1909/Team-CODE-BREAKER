@@ -2,7 +2,7 @@ from djitellopy import TelloSwarm
 from queue import Queue
 import time
 
-def s_movement(command: str, swarm_contol):  # handling commands send by the GUI
+def s_movement(command: str, swarm_contol):  # handling commands send by the GUI for the swarm
     if command == "up":
         swarm_contol.move_up(50)
     elif command == "down":

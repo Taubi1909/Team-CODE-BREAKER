@@ -7,19 +7,21 @@ from djitellopy import TelloSwarm
 import swarm
 
 def main():
-    queue = Queue()  # Queue for commands send to the drone
-    image_queue = Queue()  # Queue for every image send by the drone
+    queue = Queue()  # Queue for commands sent to the drone
+    image_queue = Queue()  # Queue for every image sent by the drone
     print("You wanna fly alone or in a swarm?")
-    if input() == "alone":
+    if input() == "alone": # One Drone
         controller = control.Controller("10.2.210.33")
         t1 = threading.Thread(target=control_thread, daemon=None, args=(queue, controller, ))
         t1.start()
         t2 = threading.Thread(target=video_thread, daemon=None, args=(controller, image_queue, ))
         t2.start()
         gui.start_gui(queue, image_queue, controller)
-    else:
+    else: # Multiple Drones
         swarm_controller = TelloSwarm.fromIps([
         "10.2.210.33",
+        "10.2.210.32",
+        "10.2.210.34",
         "10.2.210.35"  
         ])
         swarm_controller.connect()
@@ -50,7 +52,7 @@ def video_thread(controller: control.Controller, image_queue: Queue):
     controller.m_video(image_queue)
 
 def swarm_thread(swarm_control, q: Queue):
-    # Function for controlling the drone
+    # Function for controlling a swarm
     swarm_control.takeoff()
     time.sleep(2)
     a = True

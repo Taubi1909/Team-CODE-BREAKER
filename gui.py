@@ -36,10 +36,9 @@ class MainWidget(QWidget):
         self.runnning = True
         self.initMe()
 
-    def initMe(self):
+    def initMe(self):  # Building the GUI
         self.v = QVBoxLayout(self)
         self.label = QLabel()
-        # self.label.setPixmap(QPixmap.fromImage(self.image_q.get()))
         self.label.setPixmap(QPixmap("loading_video.png"))
         self.grid = QGridLayout()
         self.v.addWidget(self.label)
@@ -54,7 +53,7 @@ class MainWidget(QWidget):
             i = 0
             self.battery_bars = []
             for j in self.controller:
-                self.battery_bars.append(QProgressBar())  # Bar for displaying battery percentage
+                self.battery_bars.append(QProgressBar())  # Bars for displaying battery percentage
                 self.battery_bars[i].setToolTip(j.address[0])
                 self.v.addWidget(self.battery_bars[i])
                 i += 1
